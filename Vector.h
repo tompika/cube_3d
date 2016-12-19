@@ -20,7 +20,6 @@ class Vector
     double y;
     double z;
 
-    
     Vector()
     {
         Vector(0.0, 0.0, 0.0);
@@ -36,7 +35,6 @@ class Vector
 
     /*************************************************/
 
-    
     Vector operator+(const Vector v)
     {
 
@@ -45,7 +43,6 @@ class Vector
                       z + v.z);
     }
 
-    
     Vector operator-(const Vector v)
     {
 
@@ -62,7 +59,6 @@ class Vector
                       z * v.z);
     }
 
-    
     Vector operator*(const double s)
     {
 
@@ -87,26 +83,22 @@ class Vector
                       z / s);
     }
 
-    static double getSkalarWithVector(const Vector v, const Vector v2){
-        
-        return  (v.x * v2.x) + (v.y * v2.y) + (v.z * v2.z);
+    static double getSkalarWithVector(const Vector v, const Vector v2)
+    {
 
+        return (v.x * v2.x) + (v.y * v2.y) + (v.z * v2.z);
     }
 
-    static Vector getVectorialMul(const Vector v, const Vector v2){
+    static Vector getVectorialMul(const Vector v, const Vector v2)
+    {
         Vector res;
 
-        res.x = v.y * v2.z - v.z*v2.y; 
-        res.y = v.z * v2.x - v.x*v2.z;
-        res.z = v.x * v2.y - v.y*v2.x;
-
-
+        res.x = v.y * v2.z - v.z * v2.y;
+        res.y = v.z * v2.x - v.x * v2.z;
+        res.z = v.x * v2.y - v.y * v2.x;
 
         return res;
-
-
     }
-
 
     double length()
     {
@@ -116,7 +108,7 @@ class Vector
     void print()
     {
 
-        std::cout << "( " << x << " " << y << " " << z  <<  " )" << std::endl;
+        std::cout << "( " << x << " " << y << " " << z << " )" << std::endl;
     }
 };
 

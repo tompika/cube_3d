@@ -44,11 +44,12 @@ Point3Dhom initHom(Point3D p)
     return P;
 }
 /*
-Vector initVector(GLdouble x, GLdouble y)
+Vector initVector(GLdouble x, GLdouble y, GLdouble z)
 {
     Vector P;
     P.x = x;
     P.y = y;
+    P.z = z;
     return P;
 }
 

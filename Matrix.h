@@ -70,8 +70,16 @@ class Matrix
 
         return ret;
     }
+    static Matrix getEltoltasMatrix(double u, double v, double w){
+        std::vector<std::vector<double>> tmp = {{1, 0, 0, u},
+                                                {0, 1, 0, v},
+                                                {0, 0, 1, w},
+                                                {0, 0, 0, 1}};
+        return Matrix(4, 4, tmp);
 
-    Matrix getRotationMatrixX(int n, int m, double angle)
+    }
+
+    static Matrix getRotationMatrixX(int n, int m, double angle)
     {
 
         double rad = angle * (pi / 180);
@@ -82,7 +90,7 @@ class Matrix
         return Matrix(n, m, tmp);
     }
 
-    Matrix getRotationMatrixY(int n, int m, double angle)
+    static Matrix getRotationMatrixY(int n, int m, double angle)
     {
 
         double rad = angle * (pi / 180);
@@ -95,7 +103,7 @@ class Matrix
     }
 
 
-    Matrix getMerolegesMatrix(int n, int m){
+    static Matrix getMerolegesMatrix(int n, int m){
         std::vector<std::vector<double>> tmp = {{1, 0, 0, 0},
                                                 {0, 1, 0, 0},
                                                 {0, 0, 0, 0},
@@ -105,7 +113,7 @@ class Matrix
 
 
     }
-    Matrix getCentralisMatrix(int n, int m, double s){
+    static Matrix getCentralisMatrix(int n, int m, double s){
           std::vector<std::vector<double>> tmp = {{1, 0, 0, 0},
                                                 {0, 1, 0, 0},
                                                 {0, 0, 0, 0},
@@ -114,8 +122,25 @@ class Matrix
         return Matrix(n, m, tmp);
 
     }
+    static Matrix calcWTV(double x_min, double x_max, double y_min, double y_max, double u_min, double u_max, double v_min, double v_max)
+    {
 
-    Matrix getCameraMatrix(Vector up, Vector c, Vector p){
+           std::vector<std::vector<double>> WT = { {(u_max - u_min) / (x_max - x_min),      0,  0, u_min-x_min *((u_max - u_min) / (x_max - x_min)) },
+                                                    {0,     (v_max - v_min) / (y_max - y_min),  0,  v_min-y_min *((v_max - v_min) / (y_max - y_min)) },
+                                                    {0,     0,              1, 0},
+                                                    {0,     0,              0, 1}};
+
+
+        Matrix VTW = Matrix(4,4, WT);
+
+  
+  
+   
+        return VTW;
+
+    }
+
+    static Matrix getCameraMatrix(Vector up, Vector c, Vector p){
 
 
        
