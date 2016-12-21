@@ -21,9 +21,11 @@ class Matrix
   public:
     double **data;
     int m, n;
+    
 
     Matrix()
     {
+        Matrix(4,4);
     }
 
     Matrix(int n, int m)
@@ -32,8 +34,17 @@ class Matrix
         this->m = m;
 
         data = new double *[n];
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++){
             data[i] = new double[m];
+        }
+
+          for (int i = 0; i < n; i++){
+              for(int j=0; j<m; j++)
+               data[i][j] =0;
+        }
+
+
+        
     }
 
     Matrix(int n, int m, std::vector<std::vector<double>> data_)
@@ -56,14 +67,14 @@ class Matrix
     Matrix operator*(const Matrix Other)
     {
 
-        Matrix ret = Matrix(n, Other.m);
+        Matrix ret = Matrix(4, 4);
         float sum;
 
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < Other.m; j++)
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
             {
                 sum = 0;
-                for (int k = 0; k < m; k++)
+                for (int k = 0; k < 4; k++)
                     sum = sum + this->data[i][k] * Other.data[k][j];
                 ret.data[i][j] = sum;
             }
@@ -71,9 +82,17 @@ class Matrix
         return ret;
     }
     static Matrix getEltoltasMatrix(double u, double v, double w){
-        std::vector<std::vector<double>> tmp = {{1, 0, 0, u},
+        std::vector<std::vector<double>> tmp2 = {{1, 0, 0, u},
                                                 {0, 1, 0, v},
                                                 {0, 0, 1, w},
+                                                {0, 0, 0, 1}};
+        return Matrix(4, 4, tmp2);
+
+    }
+    static Matrix getSkalazasMatrix(double u, double v, double w){
+        std::vector<std::vector<double>> tmp = {{u, 0, 0, 0},
+                                                {0, u, 0, 0},
+                                                {0, 0, w, 0},
                                                 {0, 0, 0, 1}};
         return Matrix(4, 4, tmp);
 
@@ -117,7 +136,7 @@ class Matrix
           std::vector<std::vector<double>> tmp = {{1, 0, 0, 0},
                                                 {0, 1, 0, 0},
                                                 {0, 0, 0, 0},
-                                                {0, 0, -1/s, 1}};
+                                                {0, 0, -1.0/s, 1}};
 
         return Matrix(n, m, tmp);
 
@@ -142,34 +161,35 @@ class Matrix
 
     static Matrix getCameraMatrix(Vector up, Vector c, Vector p){
 
-
-       
-        Vector pc = c - p;
         Vector w;
+        w.x = c.x - p.x;
+        w.y = c.y - p.y;
+        w.z = c.z - p.z;
 
-        w.x = pc.x / pc.length();
-        w.y = pc.y / pc.length();
-        w.z = pc.z / pc.length();
-         
+        w.x *= -1;
+        w.y *= -1;
+        w.z *= -1;
 
-        Vector u = Vector::getVectorialMul(up, w); 
+        double h = w.length();
 
-        u.x = u.x /  u.length(); 
-        u.y = u.y /  u.length();
-        u.z = u.z /  u.length();
+        w.x = w.x / h;
+        w.y = w.y / h;
+        w.z = w.z / h;
+
+        
+        Vector u = Vector::getVectorialMul(up, w);
+        h = u.length();
+        u.x = u.x /  h; 
+        u.y = u.y /  h;
+        u.z = u.z /  h;
 
 
         Vector v = Vector::getVectorialMul(w, u);
+        h = v.length();
 
-        v.x = v.x / v.length() ;
-        v.y = v.y / v.length() ;
-        v.z = v.z / v.length() ;
-
-
-        /*std::cout << "v : ";
-            v.print();*/
-
-
+        v.x = v.x /h ;
+        v.y = v.y /h ;
+        v.z = v.z /h ;
 
       std::vector<std::vector<double>> tmp = {  {u.x,   u.y, u.z, -Vector::getSkalarWithVector(c, u)},
                                                 {v.x,   v.y, v.z, -Vector::getSkalarWithVector(c, v)},
@@ -177,8 +197,20 @@ class Matrix
                                                 {0,     0,   0,     1}};
 
 
+   /* double x[4][4]= {  {u.x,   u.y, u.z, -Vector::getSkalarWithVector(c, u)},
+                                                {v.x,   v.y, v.z, -Vector::getSkalarWithVector(c, v)},
+                                                {w.x,   w.y, w.z, -Vector::getSkalarWithVector(c, w)},
+                                                {0,     0,   0,     1}};
+    Matrix s = Matrix(4,4);
+    
+        for(int i=0; i<4; i++)
+            for(int j=0; j<4; j++)
+                s.data[i][j] = x[i][j];
+*/
 
-       return Matrix(4, 4, tmp); 
+       return Matrix(4,4, tmp); 
+
+
     }
 
 

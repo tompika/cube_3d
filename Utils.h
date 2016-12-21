@@ -1,6 +1,7 @@
 
 #ifndef UTILS_H
 #define UTILS_H
+#include <vector>
 
 typedef struct point2d
 {
@@ -23,6 +24,7 @@ typedef struct point3dhom
 } Point3Dhom;
 
 /****************************************/
+
 
 Point3D initPoint3D(GLdouble x, GLdouble y, GLdouble z)
 {

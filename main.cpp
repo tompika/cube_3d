@@ -1,6 +1,7 @@
 #include <GL/glut.h>
 #include <math.h>
 #include <vector>
+#include <algorithm>
 
 #include "Matrix.h"
 #include "Utils.h"
@@ -11,9 +12,23 @@ GLsizei winWidth = 800, winHeight = 600;
 
 GLint keyStates[256];
 
-double r = 3;
+std::vector<Lap> lapook;
+std::vector<Cube> kockak;
+
+double r = 15;
 double t = 0;
 double m = 0;
+
+Vector up = Vector(0, 0, 1);
+Vector p = Vector(0, 0, 0);
+Vector c = Vector(r * cos(t), r *sin(t), m);
+
+
+
+
+
+Matrix WTV = Matrix::calcWTV(-1, 1, -1, 1, 0, 600, 0, 600);
+Matrix centralisVet = Matrix::getCentralisMatrix(4, 4, 4);
 
 void init()
 {
@@ -21,6 +36,14 @@ void init()
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0.0, winWidth, 0.0, winHeight);
     glShadeModel(GL_FLAT);
+
+
+}
+
+bool compareLap(Lap a, Lap b)
+{
+
+    return a.getDistanceFromCentrum() > b.getDistanceFromCentrum();
 }
 
 void keyOperations()
@@ -31,6 +54,7 @@ void keyOperations()
         if (m < 15)
         {
             m += 0.01;
+            c.z = m;
         }
         //   printf("%f\n", m);
     }
@@ -40,34 +64,42 @@ void keyOperations()
         if (m > -15)
         {
             m -= 0.01;
+            c.z = m;
         }
         // printf("%f\n", m);
     }
 
     if (keyStates['a'])
     {
-        t += 0.01;
-        // std::cout << angle << std::endl;
+        t += 0.1;
+        c.x = r * cos(t);
+        c.y = r * sin(t);
     }
 
     if (keyStates['d'])
     {
 
-        t -= 0.01;
-        //std::cout << angle << std::endl;
+        t -= 0.1;
+        c.x = r * cos(t);
+        c.y = r * sin(t);
     }
 
     if (keyStates['y'])
     {
-        if(r < 15)
-        r += 0.01;
-        //std::cout << angle << std::endl;
+        if (r < 20){
+            r += 0.1;
+        c.x = r * cos(t);
+        c.y = r * sin(t);
+        }
     }
 
     if (keyStates['x'])
     {
-        if( r > 5)
-        r -= 0.01;
+        if (r > 10){
+            r -= 0.1;
+        c.x = r * cos(t);
+        c.y = r * sin(t);
+        }
     }
 
     glutPostRedisplay();
@@ -88,55 +120,45 @@ void display()
     Cube cube6;
     Cube cube7;
 
-    cube1 = Cube(Vector(0, 0, 0), 0.0, 1.0, 1.0);
-    cube2 = Cube(Vector(2, 0, 0), 0.545, 0.271, 0.075);
-    cube3 = Cube(Vector(-2, 0, 0), 1.0, 0.0, 0.0);
-
-    cube4 = Cube(Vector(0, -2, 0), 0.0, 1.0, 0.0);
-    cube5 = Cube(Vector(0, 2, 0), 0.0, 0.0, 1.0);
-    cube6 = Cube(Vector(0, 0, 2), 0.184, 0.310, 0.310);
-    cube7 = Cube(Vector(0, 0, -2), 0.0, 0.502, 0.0);
+    Matrix K = Matrix::getCameraMatrix(up, c, p);
+    Matrix N = WTV * centralisVet; 
 
 
-    Matrix WTV = Matrix::calcWTV(-4, 4, -4, 4, 100, 500, 100, 500);
-    Matrix centralisVet = Matrix::getCentralisMatrix(4, 4, 3);
+    cube1 = Cube(Vector(0, 0, 0), 0.0, 1.0, 1.0, K, N);
+    cube2 = Cube(Vector(2, 0, 0), 0.545, 0.271, 0.075, K, N);
+    cube3 = Cube(Vector(-2, 0, 0), 1.0, 0.0, 0.0, K, N);
 
-    Vector up = Vector(0, 0, 1);
+    cube4 = Cube(Vector(0, -2, 0), 0.0, 1.0, 0.0, K, N);
+    cube5 = Cube(Vector(0, 2, 0), 0.0, 0.0, 1.0, K, N);
 
-    Vector c = Vector(r * cos(t), r * sin(t), m);
-    Vector target = Vector(0, 0, 0);
+    cube6 = Cube(Vector(0, 0, 2), 0.184, 0.310, 0.310, K, N);
+    cube7 = Cube(Vector(0, 0, -2), 0.0, 0.502, 0.0, K, N);
 
-    Matrix K = Matrix::getCameraMatrix(up, c, target);
+    kockak.push_back(cube1);
+    kockak.push_back(cube2);
+    kockak.push_back(cube3);
+    kockak.push_back(cube4);
+    kockak.push_back(cube5);
+    kockak.push_back(cube6);
+    kockak.push_back(cube7);
 
-    // K.display();
-    //printf("\n");
+    for (int i = 0; i < kockak.size(); i++)
+    {
+        for (int j = 0; j < kockak[i].laps.size(); j++)
+            lapook.push_back(kockak[i].laps[j]);
+    }
 
-    Matrix tmp;// = K;
-    // cube1.print();
+    std::sort(lapook.begin(), lapook.end(), compareLap);
 
-   // cube1.transform(tmp);
-    
-    tmp = WTV * (centralisVet* K);
+    for (int i = 0; i < lapook.size(); i++)
+    {
+        lapook[i].draw();
+    }
+  
 
-    cube1.transform(tmp);
-    cube1.refreshVectors();
-    
-   // cube1.printLapVector();
+    kockak.clear();
+    lapook.clear();
 
-  /*  cube2.transform(tmp);
-    cube3.transform(tmp);
-    cube4.transform(tmp);
-    cube5.transform(tmp);
-    cube6.transform(tmp);
-    cube7.transform(tmp);*/
-
-    cube1.draw();
-   /* cube2.draw();
-    cube3.draw();
-    cube4.draw();
-    cube5.draw();
-    cube6.draw();
-    cube7.draw();*/
 
     glutSwapBuffers();
 }
@@ -170,7 +192,7 @@ int main(int argc, char **argv)
     glutInitWindowSize(winWidth, winHeight);
     glutInitWindowPosition(10, 10);
 
-    glutCreateWindow("Cubes - Szilvacsku Peter");
+    glutCreateWindow("Cubes");
     init();
 
     glutDisplayFunc(display);

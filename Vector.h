@@ -89,13 +89,13 @@ class Vector
         return (v.x * v2.x) + (v.y * v2.y) + (v.z * v2.z);
     }
 
-    static Vector getVectorialMul(const Vector v, const Vector v2)
+    static Vector getVectorialMul(const Vector a, const Vector b)
     {
         Vector res;
 
-        res.x = v.y * v2.z - v.z * v2.y;
-        res.y = v.z * v2.x - v.x * v2.z;
-        res.z = v.x * v2.y - v.y * v2.x;
+        res.x = (a.y * b.z) - (a.z * b.y);
+        res.y = (a.z * b.x) - (a.x * b.z);
+        res.z = (a.x * b.y) - (a.y * b.x);
 
         return res;
     }
@@ -103,7 +103,7 @@ class Vector
     double length()
     {
 
-        return std::sqrt(x * x + y * y + z * z);
+        return std::sqrt((x * this->x) + (this->y * this->y) + (this->z * this->z));
     }
     void print()
     {
